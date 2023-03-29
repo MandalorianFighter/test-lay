@@ -18,6 +18,11 @@ class Employee extends Model
         'employee_details'
     ];
 
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
