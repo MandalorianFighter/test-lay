@@ -11,5 +11,13 @@
         "laravel-vite-plugin": "^0.7.2",
         "sass": "^1.56.1",
         "vite": "^4.0.0"
+    },
+    "dependencies": {
+        "admin-lte": "^3.2.0"
+    },
+    "overrides": {
+        "bootstrap-switch": {
+            "bootstrap": "^4.6.1"
+        }
     }
 }

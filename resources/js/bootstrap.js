@@ -1,5 +1,87 @@
 import 'bootstrap';
 
+import $ from "jquery";
+window.$ = $;
+
+import select2 from 'select2';
+select2();
+
+$(function () {
+    $("#example1").DataTable({
+      "responsive": true, "lengthChange": true, "autoWidth": true,
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+  });
+
+
+  $('#inputDepartment').select2({
+    placeholder: 'Select Department',
+    ajax: {
+      url: '/departments/select',
+      dataType: 'json',
+      delay: 250,
+      processResults: function (data) {
+          return {
+            results:  $.map(data, function (item) {
+                  return {
+                    id: item.id,
+                    text: item.department_name
+                  }
+              })
+          };
+        }
+    }
+});
+
+$('.tags-input').on('select2:select', function (e) {
+    var data = e.params.data;
+    console.log(data.text);
+    $.ajax({
+      type: 'GET',
+      url: '/tags/new-option',
+      dataType: 'json',
+      delay: 250,
+      data: {
+        option: data.text
+      },
+      success: function(response){
+        var data = JSON.stringify(response);
+        console.log(data);
+      } 
+  });  
+});
+
+$('.tags-input').select2({
+  placeholder: 'Select Tags',
+  tags: true,
+  tokenSeparators: [',', ' '],
+  ajax: {
+      url: '/tags/select',
+      dataType: 'json',
+      delay: 250,
+      data: function(params) {
+        return {
+          q: params.term
+        }
+      },
+      processResults: function (data) {
+          return {
+            results:  $.map(data, function (item) {
+                  return {
+                    id: item.tag_name,
+                    text: item.tag_name,
+                    newTag: true
+                  }
+              })
+          };
+        }
+    }
+});
+
+
+
+
+
+
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the

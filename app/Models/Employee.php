@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Employee extends Model
 {
     use HasFactory;
+
+    const DET_LIMIT = 100;
 
     protected $fillable = [
         'employee_name',
@@ -18,6 +21,8 @@ class Employee extends Model
         'employee_details'
     ];
 
+    protected $with = ['tags', 'department'];
+
     public function department()
     {
         return $this->belongsTo(Department::class);
@@ -26,5 +31,10 @@ class Employee extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function limitDetails()
+    {
+        return Str::limit($this->employee_details, Employee::DET_LIMIT);
     }
 }
