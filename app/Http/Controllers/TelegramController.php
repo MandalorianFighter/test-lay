@@ -17,26 +17,8 @@ class TelegramController extends Controller
     public function auth(Request $request)
     {
         $user_id = $request->input('id');
-        $checkHash = $request->input('hash');
-
-        $authData = $request->except(['hash']);
-
-        $dataCheck = [];
-        foreach ($authData as $key => $value) {
-            $dataCheck[] = $key . '=' . $value;
-          }
-        sort($dataCheck);
-        $strCheck = implode("\n", $dataCheck);
-        $secretKey = hash('sha256', env('TELEGRAM_BOT_TOKEN'), true);
-        $hash = hash_hmac('sha256', $strCheck, $secretKey);
-
-        if (strcmp($hash, $checkHash) !== 0) {
-            abort(401, 'Invalid Telegram authorization hash');
-          }
-
-        if ((time() - $authData['auth_date']) > 86400) {
-            abort(401, 'Data is outdated');
-        }
+        
+        $this->checkAuthorizationHash($request);
 
         // Check if the user is already logged in
         if (Auth::check()) {
@@ -68,6 +50,29 @@ class TelegramController extends Controller
 
         if (auth()->user()->is_admin) return redirect('/admin/users');
         return redirect(RouteServiceProvider::HOME);
+    }
+
+    private function checkAuthorizationHash(Request $request)
+    {
+        $checkHash = $request->input('hash');
+        $authData = $request->except(['hash']);
+
+        $dataCheck = [];
+        foreach ($authData as $key => $value) {
+            $dataCheck[] = $key . '=' . $value;
+        }
+        sort($dataCheck);
+        $strCheck = implode("\n", $dataCheck);
+        $secretKey = hash('sha256', env('TELEGRAM_BOT_TOKEN'), true);
+        $hash = hash_hmac('sha256', $strCheck, $secretKey);
+
+        if (strcmp($hash, $checkHash) !== 0) {
+            abort(401, 'Invalid Telegram authorization hash');
+          }
+
+        if ((time() - $authData['auth_date']) > 86400) {
+            abort(401, 'Data is outdated');
+        }
     }
 }
 
