@@ -67,5 +67,10 @@ Route::group(['middleware' => 'auth'], function () {
 });
 
 Auth::routes();
+Route::get('/register', function() {
+    return redirect('/login');
+});
+
+Route::get('/telegram/auth', 'App\Http\Controllers\TelegramController@auth')->name('telegram.auth');
 
 

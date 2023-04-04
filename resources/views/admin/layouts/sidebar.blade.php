@@ -12,7 +12,11 @@
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
+          @if(auth()->user()->photo_url)
+          <img src="{{ auth()->user()->photo_url }}" class="img-circle elevation-2" alt="User Image">
+          @else
           <img src="https://www.gravatar.com/avatar/?d=mp&f=y" class="img-circle elevation-2" alt="User Image">
+          @endif
         </div>
         <div class="info">
           <a href="#" class="d-block">{{ auth()->user()->name }}</a>
