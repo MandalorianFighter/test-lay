@@ -73,5 +73,6 @@ class TelegramController extends Controller
         if ((time() - $authData['auth_date']) > 86400) {
             abort(401, 'Data is outdated');
         }
+    }
 }
 
