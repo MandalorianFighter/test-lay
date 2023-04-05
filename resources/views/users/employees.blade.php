@@ -48,6 +48,7 @@
                   <th>Details</th>
                   <th>Department</th>
                   <th>Tags</th>
+                  <th>Delete</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -59,11 +60,18 @@
                     <td>{{$employee->age}}</td>
                     <td>{{$employee->position}}</td>
                     <td>{{$employee->limitDetails()}}</td>
-                    <td>{{$employee->department->department_name}}</td>
+                    <td>{{$employee->department ? $employee->department->department_name : null}}</td>
                     <td>
                     @foreach($employee->tags as $tag)
                     <span class="badge badge-info">{{$tag->tag_name}}</span>
                     @endforeach
+                  </td>
+                  <td>
+                  <form action="{{ route('user.employees.delete', $employee) }}" method="post" style="display:inline-block;">
+                    @csrf
+                    @method('delete')
+                    <button type="submit" class="btn btn-sm btn-danger float-sm-right" onclick="return confirm('Are you sure, you want to delete this Employee?')">Delete</button>
+                    </form>
                   </td>
                   </tr>
                   @endforeach

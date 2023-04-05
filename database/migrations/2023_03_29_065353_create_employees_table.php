@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('photo')->nullable();
             $table->integer('age');
             $table->string('position');
-            $table->integer('department_id');
+            $table->integer('department_id')->nullable();
             $table->text('employee_details');
             $table->timestamps();
         });

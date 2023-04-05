@@ -53,5 +53,6 @@ class TagController extends Controller
             });
         }
         $tag->delete();
+        return Redirect()->back();
     }
 }

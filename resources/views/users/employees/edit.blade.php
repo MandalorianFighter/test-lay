@@ -108,13 +108,7 @@
                     @enderror
 
                     <div class="card-footer">
-                    <div class="container-fluid"><button type="submit" class="btn btn-primary">Update</button> 
-                    <form action="{{ route('user.employees.delete', $employee) }}" method="post" style="display:inline-block;">
-                    @csrf
-                    @method('delete')
-                    <button type="submit" class="btn btn-danger float-sm-right" onclick="return confirm('Are you sure, you want to delete this Employee?')">Delete</button>
-                    </form>
-                    </div>
+                    <div class="container-fluid"><button type="submit" class="btn btn-primary">Update</button></div>
                     </div>
                 </form>
 
