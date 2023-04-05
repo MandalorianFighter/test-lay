@@ -79,6 +79,11 @@ class EmployeeController extends Controller
 
     public function delete(Employee $employee)
     {
+        if($employee->tags->count()) {
+            $employee->tags->each(function ($tag) use ($employee) { 
+                $employee->tags()->detach($tag);
+            });
+        }
         $old_image = basename($employee->photo);
         if(Storage::disk('s3')->exists('images/'.$old_image)) Storage::disk('s3')->delete('images/'.$old_image);
         $employee->delete();
