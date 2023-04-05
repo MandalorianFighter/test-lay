@@ -14,20 +14,9 @@ class DepartmentSeeder extends Seeder
     public function run(): void
     {
         Department::truncate();
+        User::truncate();
 
-        $faker = \Faker\Factory::create();
-
-        $data = [];
-
-        for ($i = 1; $i <= 15; $i++) {
-            $data[] = [
-            'department_name' => $faker->departmentName(),
-            'department_details' => $faker->paragraphs(3, true),
-            'created_at' => now()->toDateTimeString(),
-            'updated_at' => now()->toDateTimeString(),
-        ];
-        }
-
-        Department::insert($data);
+        $admin = User::factory()->create();
+        $departments = Department::factory(15)->create();
     }
 }

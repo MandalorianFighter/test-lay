@@ -13,27 +13,10 @@ class EmployeeSeeder extends Seeder
      */
     public function run(): void
     {
-        Employee::truncate();
+        $tags = Tag::factory(25)->create();
 
-        $faker = \Faker\Factory::create();
-
-        $data = [];
-
-        for($i = 1; $i <= 1000; $i++) {
-            $item = [
-                'employee_name' => $faker->name(),
-                'photo' => $faker->imageUrl(),
-                'age' => $faker->numberBetween(22, 55),
-                'position' => $faker->jobTitle(),
-                'department_id' => $faker->numberBetween(1, 15),
-                'employee_details' => $faker->paragraphs(3, true),
-                'created_at' => now()->toDateTimeString(),
-                'updated_at' => now()->toDateTimeString(),
-            ];
-
-            $data[] = $item;
-        }
-
-        Employee::insert($data); 
+        Employee::factory(200)->create()->each(function ($employee) use($tags) {
+            $employee->tags()->attach($tags->random(3));
+        });
     }
 }

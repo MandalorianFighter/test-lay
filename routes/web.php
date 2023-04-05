@@ -27,7 +27,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::group(['prefix' => 'admin', 'middleware' => 'is_admin', 'as' => 'admin.'], function () {
         Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users');
-        Route::get('/users/delete/{id}', [App\Http\Controllers\Admin\UserController::class, 'delete'])->name('user.delete');
+        Route::delete('/users/delete/{user}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
     });
     
     Route::group(['prefix' => 'users', 'middleware' => 'is_user', 'as' => 'user.'], function () {
@@ -40,9 +40,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/employees/add', [App\Http\Controllers\User\EmployeeController::class, 'add'])->name('employees.add');
         Route::post('/employees/store', [App\Http\Controllers\User\EmployeeController::class, 'store'])->name('employees.store');
 
-        Route::get('/employees/edit/{id}', [App\Http\Controllers\User\EmployeeController::class, 'edit'])->name('employees.edit');
-        Route::post('/employees/update/{id}', [App\Http\Controllers\User\EmployeeController::class, 'update'])->name('employees.update');
-        Route::get('/employees/delete/{id}', [App\Http\Controllers\User\EmployeeController::class, 'delete'])->name('employees.delete');
+        Route::get('/employees/edit/{employee}', [App\Http\Controllers\User\EmployeeController::class, 'edit'])->name('employees.edit');
+        Route::put('/employees/update/{employee}', [App\Http\Controllers\User\EmployeeController::class, 'update'])->name('employees.update');
+        Route::delete('/employees/delete/{employee}', [App\Http\Controllers\User\EmployeeController::class, 'delete'])->name('employees.delete');
 
         
 
@@ -51,18 +51,18 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/departments/add', [App\Http\Controllers\User\DepartmentController::class, 'add'])->name('departments.add');
         Route::post('/departments/store', [App\Http\Controllers\User\DepartmentController::class, 'store'])->name('departments.store');
 
-        Route::get('/departments/edit/{id}', [App\Http\Controllers\User\DepartmentController::class, 'edit'])->name('departments.edit');
-        Route::post('/departments/update/{id}', [App\Http\Controllers\User\DepartmentController::class, 'update'])->name('departments.update');
-        Route::get('/departments/delete/{id}', [App\Http\Controllers\User\DepartmentController::class, 'delete'])->name('departments.delete');
+        Route::get('/departments/edit/{department}', [App\Http\Controllers\User\DepartmentController::class, 'edit'])->name('departments.edit');
+        Route::put('/departments/update/{department}', [App\Http\Controllers\User\DepartmentController::class, 'update'])->name('departments.update');
+        Route::delete('/departments/delete/{department}', [App\Http\Controllers\User\DepartmentController::class, 'delete'])->name('departments.delete');
 
         // Tags
 
         Route::get('/tags/add', [App\Http\Controllers\User\TagController::class, 'add'])->name('tags.add');
         Route::post('/tags/store', [App\Http\Controllers\User\TagController::class, 'store'])->name('tags.store');
 
-        Route::get('/tags/edit/{id}', [App\Http\Controllers\User\TagController::class, 'edit'])->name('tags.edit');
-        Route::post('/tags/update/{id}', [App\Http\Controllers\User\TagController::class, 'update'])->name('tags.update');
-        Route::get('/tags/delete/{id}', [App\Http\Controllers\User\TagController::class, 'delete'])->name('tags.delete');
+        Route::get('/tags/edit/{tag}', [App\Http\Controllers\User\TagController::class, 'edit'])->name('tags.edit');
+        Route::put('/tags/update/{tag}', [App\Http\Controllers\User\TagController::class, 'update'])->name('tags.update');
+        Route::delete('/tags/delete/{tag}', [App\Http\Controllers\User\TagController::class, 'delete'])->name('tags.delete');
     });
 });
 

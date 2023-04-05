@@ -35,8 +35,9 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <form action="{{ route('user.tags.update', $tag->id) }}" method="POST">
+                <form action="{{ route('user.tags.update', $tag) }}" method="POST">
                         @csrf
+                        @method('put')
                     <div class="form-group">
                         <label for="inputName">Tag Name</label>
                         <input type="text" name="tag_name" class="form-control" id="inputName" placeholder="Enter Tag Name" value="{{ $tag->tag_name }}">
@@ -45,7 +46,7 @@
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                     <div class="card-footer">
-                    <div class="container-fluid"><button type="submit" class="btn btn-primary">Update</button> <a href="{{ route('user.tags.delete', $tag->id) }}" onclick="return confirm('Are you sure, you want to delete this Tag?')" class="btn btn-danger float-sm-right">Delete</a></div>
+                    <div class="container-fluid"><button type="submit" class="btn btn-primary">Update</button></div>
                     </div>
                 </form>
 

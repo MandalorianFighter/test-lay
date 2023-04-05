@@ -38,8 +38,9 @@
               <div class="mb-3">
                     <img class="center" src="{{$employee->photo}}" width="300px">
               </div>
-                <form action="{{ route('user.employees.update', $employee->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('user.employees.update', $employee) }}" method="POST" enctype="multipart/form-data">
                         @csrf
+                        @method('put')
                     <input type="hidden" name="old_image" value="{{ $employee->photo }}">
                     <div class="form-group">
                         <label for="inputName">Full Name</label>
@@ -107,7 +108,13 @@
                     @enderror
 
                     <div class="card-footer">
-                    <div class="container-fluid"><button type="submit" class="btn btn-primary">Update</button> <a href="{{ route('user.employees.delete', $employee->id) }}" onclick="return confirm('Are you sure, you want to delete this Employee?')" class="btn btn-danger float-sm-right">Delete</a></div>
+                    <div class="container-fluid"><button type="submit" class="btn btn-primary">Update</button> 
+                    <form action="{{ route('user.employees.delete', $employee) }}" method="post" style="display:inline-block;">
+                    @csrf
+                    @method('delete')
+                    <button type="submit" class="btn btn-danger float-sm-right" onclick="return confirm('Are you sure, you want to delete this Employee?')">Delete</button>
+                    </form>
+                    </div>
                     </div>
                 </form>
 

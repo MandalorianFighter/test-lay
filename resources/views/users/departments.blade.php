@@ -45,15 +45,24 @@
                   <th>Department Name</th>
                   <th>Department Details</th>
                   <th>Created At</th>
+                  <th>Delete</th>
                 </tr>
                 </thead>
                 <tbody>
                   @foreach($departments as $department)
                   <tr>
                     <td>{{$department->id}}</td>
-                    <td><a title='Follow The Link To Edit Or Delete Item' href="{{ route('user.departments.edit', $department->id) }}">{{$department->department_name}}</a></td>
+                    <td><a title='Follow The Link To Edit Department' href="{{ route('user.departments.edit', $department) }}">{{$department->department_name}}</a></td>
                     <td>{{$department->department_details}}</td>
                     <td>{{$department->created_at}}</td>
+                    <td>
+                    <form action="{{ route('user.departments.delete', $department) }}" method="post" style="display:inline-block;">
+                    @csrf
+                    @method('delete')
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure, you want to delete this Department?')">Delete</button>
+                    </form>
+                    </td>
+                    
                   </tr>
                   @endforeach
                 </tbody>

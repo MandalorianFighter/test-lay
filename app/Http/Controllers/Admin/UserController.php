@@ -13,4 +13,10 @@ class UserController extends Controller
         $users = User::orderBy('id', 'asc')->paginate(100);
         return view('admin.datatable', compact('users'));
     }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+        return redirect()->back();
+    }
 }

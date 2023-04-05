@@ -26,53 +26,32 @@ class DepartmentController extends Controller
             'department_details' => $request->department_details
         ]);
 
-        $notification = array(
-            'message' => 'Department Is Created Successfully!',
-            'alert-type' => 'success',
-        );
-
-        return Redirect()->route('user.departments')->with($notification);
+        return Redirect()->route('user.departments');
     }
 
-    public function edit($id)
+    public function edit(Department $department)
     {
-        $department = Department::findOrFail($id);
-        
         return view('users.departments.edit', compact('department'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Department $department)
     {
         $request->validate([
             'department_name' => 'required|min:2|max:256',
             'department_details' => 'nullable|max:700'
         ]);
 
-        $department = Department::findOrFail($id);
-
         $department->update([
             'department_name' => $request->department_name,
             'department_details' => $request->department_details
         ]);
 
-        $notification = array(
-            'message' => 'Department Is Updated Successfully!',
-            'alert-type' => 'info',
-        );
-
-        return Redirect()->route('user.departments')->with($notification);
+        return Redirect()->route('user.departments');
     }
 
-    public function delete($id)
+    public function delete(Department $department)
     {
-        $department = Department::find($id);
         $department->delete();
-
-        $notification = array(
-            'message' => 'Department Is Deleted Successfully!',
-            'alert-type' => 'warning',
-        );
-
-        return Redirect()->route('user.departments')->with($notification);
+        return Redirect()->back();
     }
 }

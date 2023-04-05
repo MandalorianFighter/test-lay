@@ -43,6 +43,7 @@
                   <th>IsAdmin</th>
                   <th>Approved</th>
                   <th>Registered At</th>
+                  <th>Delete</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -56,6 +57,13 @@
                     @livewire('toggle-switch', ['model' => $user, 'field' => 'approved'], key($user->id))
                     </td>
                     <td>{{$user->created_at->diffForHumans()}}</td>
+                    <td>
+                    <form action="{{ route('admin.users.destroy', $user) }}" method="post" style="display:inline-block;">
+                    @csrf
+                    @method('delete')
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure, you want to delete this User?')">Delete</button>
+                    </form>
+                    </td>
                   </tr>
                   @endforeach
                 </tbody>

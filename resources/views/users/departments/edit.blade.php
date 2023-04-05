@@ -35,8 +35,9 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <form action="{{ route('user.departments.update', $department->id) }}" method="POST">
+                <form action="{{ route('user.departments.update', $department) }}" method="POST">
                         @csrf
+                        @method('put')
                     <div class="form-group">
                         <label for="inputName">Department Name</label>
                         <input type="text" name="department_name" class="form-control" id="inputName" placeholder="Enter Department Name" value="{{ $department->department_name }}">
@@ -52,7 +53,7 @@
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                     <div class="card-footer">
-                    <div class="container-fluid"><button type="submit" class="btn btn-primary">Update</button> <a href="{{ route('user.departments.delete', $department->id) }}" onclick="return confirm('Are you sure, you want to delete this Department?')" class="btn btn-danger float-sm-right">Delete</a></div>
+                    <div class="container-fluid"><button type="submit" class="btn btn-primary">Update</button></div>
                     </div>
                 </form>
 

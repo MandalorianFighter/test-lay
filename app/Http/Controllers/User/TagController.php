@@ -24,51 +24,34 @@ class TagController extends Controller
             'tag_name' => $request->tag_name
         ]);
 
-        $notification = array(
-            'message' => 'Tag Is Created Successfully!',
-            'alert-type' => 'success',
-        );
-
-        return Redirect()->route('user.tags')->with($notification);
+        return Redirect()->route('user.tags');
     }
 
-    public function edit($id)
+    public function edit(Tag $tag)
     {
-        $tag = Tag::findOrFail($id);
-        
         return view('users.tags.edit', compact('tag'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Tag $tag)
     {
         $request->validate([
             'tag_name' => 'required|min:2|max:256'
         ]);
 
-        $tag = Tag::findOrFail($id);
-
         $tag->update([
             'tag_name' => $request->tag_name
         ]);
 
-        $notification = array(
-            'message' => 'Tag Is Updated Successfully!',
-            'alert-type' => 'info',
-        );
-
-        return Redirect()->route('user.tags')->with($notification);
+        return Redirect()->route('user.tags');
     }
 
-    public function delete($id)
+    public function delete(Tag $tag)
     {
-        $department = Tag::find($id);
-        $department->delete();
-
-        $notification = array(
-            'message' => 'Tag Is Deleted Successfully!',
-            'alert-type' => 'warning',
-        );
-
-        return Redirect()->route('user.tags')->with($notification);
+        if($tag->employees->count()) {
+            $tag->employees->each(function ($employee) use ($tag) { 
+                $tag->employees()->detach($employee);
+            });
+        }
+        $tag->delete();
     }
 }

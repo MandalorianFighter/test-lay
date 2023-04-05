@@ -54,7 +54,7 @@
                   @foreach($employees as $employee)
                   <tr>
                     <td>{{$employee->id}}</td>
-                    <td><a title='Follow The Link To Edit Or Delete Employee' href="{{ route('user.employees.edit', $employee->id) }}">{{$employee->employee_name}}</a></td>
+                    <td><a title='Follow The Link To Edit or Delete Employee' href="{{ route('user.employees.edit', $employee) }}">{{$employee->employee_name}}</a></td>
                     <td><img src="{{asset($employee->photo)}}" alt="employee" style="height:60px;"></td>
                     <td>{{$employee->age}}</td>
                     <td>{{$employee->position}}</td>

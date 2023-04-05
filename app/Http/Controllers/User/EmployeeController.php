@@ -41,15 +41,14 @@ class EmployeeController extends Controller
         return Redirect()->route('user.employees');
     }
 
-    public function edit($id)
+    public function edit(Employee $employee)
     {
-        $employee = Employee::findOrFail($id);
         $departments = Department::select('id','department_name')->cursor();
         
         return view('users.employees.edit', compact('employee','departments'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Employee $employee)
     {
         $request->validate([
             'employee_name' => 'required|min:2|max:256',
@@ -61,7 +60,6 @@ class EmployeeController extends Controller
             'tags.*' => 'nullable',
         ]);
 
-        $employee = Employee::findOrFail($id);
         $old_image = basename($request->old_image);
 
         $employee->update($request->all());
@@ -79,12 +77,10 @@ class EmployeeController extends Controller
         return Redirect()->route('user.employees');
     }
 
-    public function delete($id)
+    public function delete(Employee $employee)
     {
-        $employee = Employee::find($id);
         $old_image = basename($employee->photo);
         if(Storage::disk('s3')->exists('images/'.$old_image)) Storage::disk('s3')->delete('images/'.$old_image);
-    
         $employee->delete();
 
         return Redirect()->route('user.employees');
