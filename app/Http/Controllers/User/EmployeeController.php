@@ -6,12 +6,50 @@ use App\Models\Tag;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use App\DataTables\EmployeesDataTable;
 use App\Models\Employee;
 use App\Models\Department;
 use Image;
 
 class EmployeeController extends Controller
 {
+    public function index(EmployeesDataTable $dataTable)
+    {
+        return $dataTable->render('users.employees');
+    }
+
+    public function dataEmployee(Request $request)
+    {
+        $model = Employee::query();
+ 
+        return app('datatables')->eloquent($model)
+        ->addColumn('employee_name', function ($model) {
+            return '<a title="Follow The Link To Edit Employee" href="'.route('user.employees.edit', $model).'">'.$model->employee_name.'</a>';
+        })
+        ->orderColumn('employee_name', function ($query, $order) {
+            $query->orderBy('employee_name', $order);
+        })
+        ->addColumn('photo', function ($model) {
+            return '<img src="'. $model->photo .'" height="60px" />';
+        })
+        ->orderColumn('details', function ($query, $order) {
+            $query->orderBy('employee_details', $order);
+        })
+        ->orderColumn('department', function ($query, $order) {
+            $query->orderBy(Department::select('department_name')->whereColumn('departments.id', 'employees.department_id'), $order);
+        })
+        ->addColumn('tags', function ($model) {
+            return collect($model->tags)->map(function ($tag) {
+                return '<span class="badge badge-info">'.$tag->tag_name.'</span>';
+            })->implode(' ');
+        })
+        ->addIndexColumn()
+        ->addColumn('action', function ($model) {
+            return view('users.employees.delete', ['employee' => $model]);
+        })
+        ->rawColumns(['employee_name', 'photo', 'tags', 'action'])
+        ->toJson();
+    }
 
     public function add()
     {   
@@ -41,8 +79,9 @@ class EmployeeController extends Controller
         return Redirect()->route('user.employees');
     }
 
-    public function edit(Employee $employee)
+    public function edit($id)
     {
+        $employee = Employee::find($id);
         $departments = Department::select('id','department_name')->cursor();
         
         return view('users.employees.edit', compact('employee','departments'));
@@ -90,6 +129,8 @@ class EmployeeController extends Controller
 
         return Redirect()->route('user.employees');
     }
+
+    
 
     public function searchD(Request $request)
     {
@@ -140,6 +181,5 @@ class EmployeeController extends Controller
         $tagIds = Tag::whereIn('tag_name', $tags)->get()->pluck('id');
         $employee->tags()->sync($tagIds);
     }
-
     
 }

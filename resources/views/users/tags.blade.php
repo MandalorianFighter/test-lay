@@ -37,35 +37,7 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Tags Name</th>
-                  <th>Created At</th>
-                  <th>Delete</th>
-                </tr>
-                </thead>
-                <tbody>
-                  @foreach($tags as $tag)
-                  <tr>
-                    <td>{{$tag->id}}</td>
-                    <td><a title='Follow The Link To Edit Tag' href="{{ route('user.tags.edit', $tag) }}">{{$tag->tag_name}}</a></td>
-                    <td>{{$tag->created_at}}</td>
-                    <td>
-                    <form action="{{ route('user.tags.delete', $tag) }}" method="post" style="display:inline-block;">
-                    @csrf
-                    @method('delete')
-                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure, you want to delete this Tag?')">Delete</button>
-                    </form>
-                    </td>
-                  </tr>
-                  @endforeach
-                </tbody>
-              
-                </table>
-                
-                {{ $tags->links() }}
+              {{ $dataTable->table() }}
               </div>
               <!-- /.card-body -->
               </div>

@@ -108,7 +108,8 @@
                     @enderror
 
                     <div class="card-footer">
-                    <div class="container-fluid"><button type="submit" class="btn btn-primary">Update</button></div>
+                    <div class="container-fluid"><button type="submit" class="btn btn-primary">Update</button> 
+                    </div>
                     </div>
                 </form>
 

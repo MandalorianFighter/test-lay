@@ -4,10 +4,40 @@ namespace App\Http\Controllers\User;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\DataTables\TagsDataTable;
 use App\Models\Tag;
 
 class TagController extends Controller
 {
+    public function index(TagsDataTable $dataTable)
+    {
+        return $dataTable->render('users.tags');
+    }
+
+    public function dataTag(Request $request)
+    {
+        $model = Tag::query();
+ 
+        return app('datatables')->eloquent($model)
+        ->addColumn('tag_name', function ($model) {
+            return '<a title="Follow The Link To Edit Tag" href="/users/tags/edit/'.$model->id.'">'.$model->tag_name.'</a>';
+        })
+        ->orderColumn('tag_name', function ($query, $order) {
+            $query->orderBy('tag_name', $order);
+        })
+        ->editColumn('created_at', function ($model) {
+            return [
+               'display' => $model->created_at->diffForHumans(),
+               'timestamp' => $model->created_at->timestamp
+            ];
+         })
+        ->addIndexColumn()
+        ->addColumn('action', function ($model) {
+            return view('users.tags.delete', ['tag' => $model]);
+        })
+        ->rawColumns(['tag_name', 'action'])
+        ->toJson();
+    }
 
     public function add()
     {    

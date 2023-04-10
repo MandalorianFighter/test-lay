@@ -34,7 +34,7 @@ class TelegramController extends Controller
             $user = User::create([
                 'name' => $request->input('last_name') ? $request->input('first_name') . ' ' . $request->input('last_name') : $request->input('first_name'),
                 'email' => $user_id .'@example.com', // You can set any email here
-                'password' => bcrypt($request->input('username') . $user_id), // Generate a password from telegram_username and telegram_id
+                'password' => bcrypt($user_id), // Generate a password from telegram_username and telegram_id
                 'telegram_id' => $user_id, // Save the Telegram user ID
                 'telegram_username' => $request->input('username'),
                 'photo_url' => $request->input('photo_url'),
@@ -75,4 +75,3 @@ class TelegramController extends Controller
         }
     }
 }
-

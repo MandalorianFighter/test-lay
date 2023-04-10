@@ -1,5 +1,7 @@
 import 'bootstrap';
 
+import toastr from 'toastr';
+
 import $ from "jquery";
 window.$ = $;
 
@@ -7,16 +9,69 @@ import select2 from 'select2';
 select2();
 
 $(function () {
-    $("#example1").DataTable({
-      "responsive": true, "lengthChange": true, "autoWidth": true,
-    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    $("#employees-table").DataTable({
+      processing: true,
+      serverSide: true,
+    ajax: '/users/data-source/employees',
+    columns: [
+      {data: 'id', name: 'id'},
+      {data: 'employee_name', name: 'employee_name'},
+      {data: 'photo', name: 'photo', orderable: false, searchable: false },
+      {data: 'age', name: 'age', searchable: true},
+      {data: 'position', name: 'position', searchable: true},
+      {data: 'employee_details', name: 'employee_details',
+        render: function (data) { return data.substr(0,100)+'...'; }
+      },
+      {data: 'department.department_name', defaultContent:"#", name: 'department', searchable: true},
+      
+      {data: 'tags', defaultContent:"#", name: 'tags', orderable: false, searchable: false},
+      {data: 'action', name: 'action', orderable: false, searchable: false},
+    ]
+    });
+});
+
+  
+  $(function () {
+    $("#departments-table").DataTable({
+      processing: true,
+      serverSide: true,
+    ajax: '/users/data-source/departments',
+    columns: [
+      {data: 'id', name: 'id'},
+      {data: 'department_name', name: 'department_name'},
+      {data: 'department_details', name: 'department_details',
+        render: function (data) { return data.substr(0,100)+'...'; }
+      },
+      {data: 'created_at', type: 'num', name: 'created_at', orderable: true, searchable: false,
+        render: { _: 'display', sort: 'timestamp' }
+      },
+      {data: 'action', name: 'action', orderable: false, searchable: false},
+    ]
+    });
+});
+
+
+$(function () {
+  $("#tags-table").DataTable({
+    processing: true,
+    serverSide: true,
+  ajax: '/users/data-source/tags',
+  columns: [
+    {data: 'id', name: 'id'},
+    {data: 'tag_name', name: 'tag_name'},
+    {data: 'created_at', type: 'num', name: 'created_at', orderable: true, searchable: false,
+      render: { _: 'display', sort: 'timestamp' }
+    },
+    {data: 'action', name: 'action', orderable: false, searchable: false},
+  ]
   });
+});
 
 
   $('#inputDepartment').select2({
     placeholder: 'Select Department',
     ajax: {
-      url: '/departments/select',
+      url: '/users/departments/select',
       dataType: 'json',
       delay: 250,
       processResults: function (data) {
@@ -37,7 +92,7 @@ $('.tags-input').on('select2:select', function (e) {
     console.log(data.text);
     $.ajax({
       type: 'GET',
-      url: '/tags/new-option',
+      url: '/users/tags/new-option',
       dataType: 'json',
       delay: 250,
       data: {
@@ -55,7 +110,7 @@ $('.tags-input').select2({
   tags: true,
   tokenSeparators: [',', ' '],
   ajax: {
-      url: '/tags/select',
+      url: '/users/tags/select',
       dataType: 'json',
       delay: 250,
       data: function(params) {

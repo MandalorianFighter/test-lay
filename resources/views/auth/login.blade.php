@@ -14,7 +14,7 @@
                 <div class="card-header">{{ __('Login/Register') }}</div>
 
                 <div class="card-body d-flex justify-content-center">
-                    <!-- <form method="POST" action="{{ route('login') }}">
+                    <form method="POST" action="{{ route('login') }}">
                         @csrf
 
                         <div class="row mb-3">
@@ -70,7 +70,7 @@
                                 @endif
                             </div>
                         </div>
-                    </form> -->
+                    </form>
                     <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="LaravelTestNotifyBot" data-size="large" data-userpic="false" data-auth-url="{{ route('telegram.auth') }}" data-request-access="write"></script>
                     <div class="tg-login"></div>
                 </div>

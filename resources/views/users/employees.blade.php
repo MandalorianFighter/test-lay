@@ -37,49 +37,7 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Full Name</th>
-                  <th>Photo</th>
-                  <th>Age</th>
-                  <th>Position</th>
-                  <th>Details</th>
-                  <th>Department</th>
-                  <th>Tags</th>
-                  <th>Delete</th>
-                </tr>
-                </thead>
-                <tbody>
-                  @foreach($employees as $employee)
-                  <tr>
-                    <td>{{$employee->id}}</td>
-                    <td><a title='Follow The Link To Edit or Delete Employee' href="{{ route('user.employees.edit', $employee) }}">{{$employee->employee_name}}</a></td>
-                    <td><img src="{{asset($employee->photo)}}" alt="employee" style="height:60px;"></td>
-                    <td>{{$employee->age}}</td>
-                    <td>{{$employee->position}}</td>
-                    <td>{{$employee->limitDetails()}}</td>
-                    <td>{{$employee->department ? $employee->department->department_name : null}}</td>
-                    <td>
-                    @foreach($employee->tags as $tag)
-                    <span class="badge badge-info">{{$tag->tag_name}}</span>
-                    @endforeach
-                  </td>
-                  <td>
-                  <form action="{{ route('user.employees.delete', $employee) }}" method="post" style="display:inline-block;">
-                    @csrf
-                    @method('delete')
-                    <button type="submit" class="btn btn-sm btn-danger float-sm-right" onclick="return confirm('Are you sure, you want to delete this Employee?')">Delete</button>
-                    </form>
-                  </td>
-                  </tr>
-                  @endforeach
-                </tbody>
-              
-                </table>
-                
-                {{ $employees->links() }}
+              {{ $dataTable->table() }}
               </div>
               <!-- /.card-body -->
               </div>
