@@ -10,11 +10,13 @@
         "bootstrap": "^5.2.3",
         "laravel-datatables-vite": "^0.5.2",
         "laravel-vite-plugin": "^0.7.2",
-        "sass": "^1.56.1",
+        "sass": "^1.61.0",
         "vite": "^4.0.0"
     },
     "dependencies": {
-        "admin-lte": "^3.2.0"
+        "admin-lte": "^3.2.0",
+        "noty": "^3.2.0-beta-deprecated",
+        "toastr": "^2.1.4"
     },
     "overrides": {
         "bootstrap-switch": {

@@ -19,7 +19,7 @@ class TagController extends Controller
         $model = Tag::query();
  
         return app('datatables')->eloquent($model)
-        ->addColumn('tag_name', function ($model) {
+        ->editColumn('tag_name', function ($model) {
             return '<a title="Follow The Link To Edit Tag" href="/users/tags/edit/'.$model->id.'">'.$model->tag_name.'</a>';
         })
         ->orderColumn('tag_name', function ($query, $order) {
@@ -54,7 +54,12 @@ class TagController extends Controller
             'tag_name' => $request->tag_name
         ]);
 
-        return Redirect()->route('user.tags');
+        $notification = array(
+            'message' => 'Tag Is Created Successfully!',
+            'alert-type' => 'success',
+        );
+
+        return Redirect()->route('user.tags')->with($notification);
     }
 
     public function edit(Tag $tag)
@@ -72,7 +77,12 @@ class TagController extends Controller
             'tag_name' => $request->tag_name
         ]);
 
-        return Redirect()->route('user.tags');
+        $notification = array(
+            'message' => 'Tag Is Updated Successfully!',
+            'alert-type' => 'success',
+        );
+
+        return Redirect()->route('user.tags')->with($notification);
     }
 
     public function delete(Tag $tag)
@@ -83,6 +93,12 @@ class TagController extends Controller
             });
         }
         $tag->delete();
-        return Redirect()->back();
+
+        $notification = array(
+            'message' => 'Tag Is Deleted!',
+            'alert-type' => 'warning',
+        );
+
+        return Redirect()->route('user.tags')->with($notification);
     }
 }

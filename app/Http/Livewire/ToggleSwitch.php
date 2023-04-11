@@ -26,5 +26,6 @@ class ToggleSwitch extends Component
     public function updating($field, $value)
     {
         $this->model->setAttribute($this->field, $value)->save();
+        $this->dispatchBrowserEvent('alert', ['type' => 'info',  'message' => __('User Status Is Updated!')]);
     }
 }

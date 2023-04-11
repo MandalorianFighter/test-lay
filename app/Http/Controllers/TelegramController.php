@@ -20,12 +20,6 @@ class TelegramController extends Controller
         
         $this->checkAuthorizationHash($request);
 
-        // Check if the user is already logged in
-        if (Auth::check()) {
-            // Redirect the user to the home page
-            return redirect('/');
-        }
-
         // Try to find the user by their Telegram user ID
         $user = User::where('telegram_id', $user_id)->first();
 
@@ -33,8 +27,8 @@ class TelegramController extends Controller
         if (!$user) {
             $user = User::create([
                 'name' => $request->input('last_name') ? $request->input('first_name') . ' ' . $request->input('last_name') : $request->input('first_name'),
-                'email' => $user_id .'@example.com', // You can set any email here
-                'password' => bcrypt($user_id), // Generate a password from telegram_username and telegram_id
+                'email' =>  $user_id.'@example.com', // You can set any email here
+                'password' => bcrypt($request->input('username') . $user_id), // Generate a password from telegram_username and telegram_id
                 'telegram_id' => $user_id, // Save the Telegram user ID
                 'telegram_username' => $request->input('username'),
                 'photo_url' => $request->input('photo_url'),

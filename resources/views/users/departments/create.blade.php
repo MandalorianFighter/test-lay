@@ -39,14 +39,14 @@
                         @csrf
                     <div class="form-group">
                         <label for="inputName">Department Name</label>
-                        <input type="text" name="department_name" class="form-control" id="inputName" placeholder="Enter Department Name">
+                        <input type="text" name="department_name" class="form-control" id="inputName" placeholder="Enter Department Name"  value="{{old('department_name')}}">
                     </div>
                     @error('department_name')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                     <div class="form-group">
                         <label for="inputDetails">Department Details</label>
-                        <textarea name="department_details" class="form-control" id="inputDetails" placeholder="Enter Department Details"></textarea>
+                        <textarea name="department_details" class="form-control" id="inputDetails" placeholder="Enter Department Details">{{old('department_details')}}</textarea>
                     </div>
                     @error('department_details')
                         <span class="text-danger">{{ $message }}</span>

@@ -13,6 +13,7 @@ use Image;
 
 class EmployeeController extends Controller
 {
+
     public function index(EmployeesDataTable $dataTable)
     {
         return $dataTable->render('users.employees');
@@ -20,25 +21,25 @@ class EmployeeController extends Controller
 
     public function dataEmployee(Request $request)
     {
-        $model = Employee::query();
+        $model = Employee::with(['department', 'tags']);
  
         return app('datatables')->eloquent($model)
-        ->addColumn('employee_name', function ($model) {
+        ->editColumn('employee_name', function ($model) {
             return '<a title="Follow The Link To Edit Employee" href="'.route('user.employees.edit', $model).'">'.$model->employee_name.'</a>';
         })
         ->orderColumn('employee_name', function ($query, $order) {
             $query->orderBy('employee_name', $order);
         })
         ->addColumn('photo', function ($model) {
-            return '<img src="'. $model->photo .'" height="60px" />';
+            return '<img src="'. $model->thumbnail .'" height="60px" />';
         })
         ->orderColumn('details', function ($query, $order) {
             $query->orderBy('employee_details', $order);
         })
-        ->orderColumn('department', function ($query, $order) {
-            $query->orderBy(Department::select('department_name')->whereColumn('departments.id', 'employees.department_id'), $order);
+        ->orderColumn('department', function ($model) {
+            return $model->department->department_name;
         })
-        ->addColumn('tags', function ($model) {
+        ->editColumn('tags', function ($model) {
             return collect($model->tags)->map(function ($tag) {
                 return '<span class="badge badge-info">'.$tag->tag_name.'</span>';
             })->implode(' ');
@@ -66,25 +67,36 @@ class EmployeeController extends Controller
             'department_id' => 'required',
             'position' => 'required',
             'employee_details' => 'required|max:700',
-            'photo' => 'image|max:5120|mimes:jpg,png|dimensions:min_width=300,min_height=300',
+            'photo' => 'image|max:2048|mimes:jpg,png|dimensions:min_width=300,min_height=300',
             'tags.*' => 'nullable',
-        ]);
+        ],
+        [
+            'photo.dimensions' => 'An image should be at least :min_width x :min_height pixels!',
+        ]
+    );
 
         $employee = Employee::create($request->except(['photo']));
         $employee->photo = $this->storePhoto($request);
+        $employee->thumbnail = $this->generateThumbnail($request);
         $employee->save();
 
         $this->syncTag($employee, $request->tags);
 
-        return Redirect()->route('user.employees');
+        $notification = array(
+            'message' => 'Employee Is Created Successfully!',
+            'alert-type' => 'success',
+        );
+
+        return Redirect()->route('user.employees')->with($notification);
     }
 
     public function edit($id)
     {
         $employee = Employee::find($id);
         $departments = Department::select('id','department_name')->cursor();
+        $tags = Tag::select('id','tag_name')->cursor();
         
-        return view('users.employees.edit', compact('employee','departments'));
+        return view('users.employees.edit', compact('employee','departments','tags'));
     }
 
     public function update(Request $request, Employee $employee)
@@ -95,9 +107,13 @@ class EmployeeController extends Controller
             'department_id' => 'required',
             'position' => 'required',
             'employee_details' => 'required|max:700',
-            'photo' => 'image|max:5120|mimes:jpg,png|dimensions:min_width=300,min_height=300',
+            'photo' => 'image|max:2048|mimes:jpg,png|dimensions:min_width=300,min_height=300',
             'tags.*' => 'nullable',
-        ]);
+        ],
+        [
+            'photo.dimensions' => 'An image should be at least :min_width x :min_height pixels!',
+        ]
+    );
 
         $old_image = basename($request->old_image);
 
@@ -105,15 +121,22 @@ class EmployeeController extends Controller
 
         if($request->hasFile('photo')) {
             $employee->photo = $this->storePhoto($request);
+            $employee->thumbnail = $this->generateThumbnail($request);
             $employee->save();
         
             // if(file_exists($old_image)) unlink($old_image);
             if(Storage::disk('s3')->exists('images/'.$old_image)) Storage::disk('s3')->delete('images/'.$old_image);
+            if(Storage::disk('s3')->exists('images/thumbnails/small_'.$old_image)) Storage::disk('s3')->delete('images/thumbnails/small_'.$old_image);
         }
 
         $this->syncTag($employee, $request->tags);
         
-        return Redirect()->route('user.employees');
+        $notification = array(
+            'message' => 'Employee Is Updated Successfully!',
+            'alert-type' => 'success',
+        );
+
+        return Redirect()->route('user.employees')->with($notification);
     }
 
     public function delete(Employee $employee)
@@ -125,12 +148,16 @@ class EmployeeController extends Controller
         }
         $old_image = basename($employee->photo);
         if(Storage::disk('s3')->exists('images/'.$old_image)) Storage::disk('s3')->delete('images/'.$old_image);
+        if(Storage::disk('s3')->exists('images/thumbnails/small_'.$old_image)) Storage::disk('s3')->delete('images/thumbnails/small_'.$old_image);
         $employee->delete();
 
-        return Redirect()->route('user.employees');
-    }
+        $notification = array(
+            'message' => 'Employee Is Deleted!',
+            'alert-type' => 'warning',
+        );
 
-    
+        return Redirect()->route('user.employees')->with($notification);
+    }
 
     public function searchD(Request $request)
     {
@@ -165,12 +192,31 @@ class EmployeeController extends Controller
         }
     
         $name = $request->file('photo')->hashname();
-        $image = Image::make($request->file('photo'))->fit(300, 300)->stream('jpg', 90);
-        $path = 'images/'.$name;
-        Storage::disk('s3')->put($path, $image,'public');
-        $url = Storage::disk('s3')->url($path);
+        $image = Image::make($request->file('photo'))->resize(400, 400, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        })->stream('jpg', 90);
+        $imgPath = 'images/'.$name;
+        Storage::disk('s3')->put($imgPath, $image,'public');
+        $url = Storage::disk('s3')->url($imgPath);
 
         return $url;
+    }
+
+    private function generateThumbnail(Request $request)
+    {
+        if(!$request->hasFile('photo')) {
+            return;
+        }
+
+        $name = 'small_'.$request->file('photo')->hashname();
+        $thumbImage = Image::make($request->file('photo'))->resize(200, 200, function ($constraint) {
+            $constraint->aspectRatio();
+        })->stream('jpg', 90);
+        $thumbPath = 'images/thumbnails/'.$name;
+        Storage::disk('s3')->put($thumbPath, $thumbImage,'public');
+        $thumbUrl = Storage::disk('s3')->url($thumbPath);
+        return $thumbUrl;
     }
 
     private function syncTag(Employee $employee, array $tags)

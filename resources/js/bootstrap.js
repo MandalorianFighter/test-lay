@@ -1,6 +1,10 @@
 import 'bootstrap';
 
+import Noty from 'noty';
+window.Noty = Noty;
+
 import toastr from 'toastr';
+window.toastr = toastr;
 
 import $ from "jquery";
 window.$ = $;
@@ -17,12 +21,12 @@ $(function () {
       {data: 'id', name: 'id'},
       {data: 'employee_name', name: 'employee_name'},
       {data: 'photo', name: 'photo', orderable: false, searchable: false },
-      {data: 'age', name: 'age', searchable: true},
-      {data: 'position', name: 'position', searchable: true},
+      {data: 'age', name: 'age'},
+      {data: 'position', name: 'position'},
       {data: 'employee_details', name: 'employee_details',
         render: function (data) { return data.substr(0,100)+'...'; }
       },
-      {data: 'department.department_name', defaultContent:"#", name: 'department', searchable: true},
+      {data: 'department.department_name', defaultContent:"#", name: 'department.department_name'},
       
       {data: 'tags', defaultContent:"#", name: 'tags', orderable: false, searchable: false},
       {data: 'action', name: 'action', orderable: false, searchable: false},
@@ -38,14 +42,14 @@ $(function () {
     ajax: '/users/data-source/departments',
     columns: [
       {data: 'id', name: 'id'},
-      {data: 'department_name', name: 'department_name'},
-      {data: 'department_details', name: 'department_details',
+      {data: 'department_name', name: 'department_name', width: "20%"},
+      {data: 'department_details', name: 'department_details', width: "40%",
         render: function (data) { return data.substr(0,100)+'...'; }
       },
       {data: 'created_at', type: 'num', name: 'created_at', orderable: true, searchable: false,
         render: { _: 'display', sort: 'timestamp' }
       },
-      {data: 'action', name: 'action', orderable: false, searchable: false},
+      {data: 'action', name: 'action', width: "15%", orderable: false, searchable: false},
     ]
     });
 });
@@ -62,7 +66,7 @@ $(function () {
     {data: 'created_at', type: 'num', name: 'created_at', orderable: true, searchable: false,
       render: { _: 'display', sort: 'timestamp' }
     },
-    {data: 'action', name: 'action', orderable: false, searchable: false},
+    {data: 'action', name: 'action', width: "20%", orderable: false, searchable: false},
   ]
   });
 });

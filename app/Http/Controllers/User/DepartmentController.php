@@ -19,7 +19,7 @@ class DepartmentController extends Controller
         $model = Department::query();
  
         return app('datatables')->eloquent($model)
-        ->addColumn('department_name', function ($model) {
+        ->editColumn('department_name', function ($model) {
             return '<a title="Follow The Link To Edit Department" href="/users/departments/edit/'.$model->id.'">'.$model->department_name.'</a>';
         })
         ->orderColumn('department_name', function ($query, $order) {
@@ -56,7 +56,12 @@ class DepartmentController extends Controller
             'department_details' => $request->department_details
         ]);
 
-        return Redirect()->route('user.departments');
+        $notification = array(
+            'message' => 'Department Is Created Successfully!',
+            'alert-type' => 'success',
+        );
+
+        return Redirect()->route('user.departments')->with($notification);
     }
 
     public function edit(Department $department)
@@ -76,13 +81,23 @@ class DepartmentController extends Controller
             'department_details' => $request->department_details
         ]);
 
-        return Redirect()->route('user.departments');
+        $notification = array(
+            'message' => 'Department Is Updated Successfully!',
+            'alert-type' => 'success',
+        );
+
+        return Redirect()->route('user.departments')->with($notification);
     }
 
     public function delete(Department $department)
     {
         $department->delete();
 
-        return Redirect()->route('user.departments');
+        $notification = array(
+            'message' => 'Department Is Deleted!',
+            'alert-type' => 'warning',
+        );
+
+        return Redirect()->route('user.departments')->with($notification);
     }
 }

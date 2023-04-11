@@ -49,5 +49,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 <!-- REQUIRED SCRIPTS -->
 <livewire:scripts />
+<script type="module">
+  window.addEventListener('alert', event => { 
+          toastr[event.detail.type](event.detail.message, 
+          event.detail.title ?? '')
+        });
+</script>
 </body>
 </html>

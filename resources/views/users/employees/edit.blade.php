@@ -44,7 +44,7 @@
                     <input type="hidden" name="old_image" value="{{ $employee->photo }}">
                     <div class="form-group">
                         <label for="inputName">Full Name</label>
-                        <input type="text" name="employee_name" class="form-control" id="inputName" placeholder="Enter Employee Full Name" value="{{ $employee->employee_name }}">
+                        <input type="text" name="employee_name" class="form-control" id="inputName" placeholder="Enter Employee Full Name" value="{{ old('employee_name', $employee->employee_name) }}">
                     </div>
                     @error('employee_name')
                         <span class="text-danger">{{ $message }}</span>
@@ -52,7 +52,7 @@
 
                     <div class="form-group">
                     <div class="custom-file">
-                    <input type="file" name="photo" class="custom-file-input" id="customFile">
+                    <input type="file" name="photo" class="custom-file-input" id="customFile" value="{{ old('photo', $employee->photo) }}">
                     <label class="custom-file-label" for="customFile">Choose Photo</label>
                     </div>
                     </div>
@@ -62,21 +62,21 @@
 
                     <div class="form-group">
                         <label for="inputAge">Age</label>
-                        <input type="text" name="age" class="form-control" id="inputAge" inputmode="numeric" placeholder="Enter Employee Age"  value="{{ $employee->age }}">
+                        <input type="text" name="age" class="form-control" id="inputAge" inputmode="numeric" placeholder="Enter Employee Age"  value="{{ old('age', $employee->age) }}">
                     </div>
                     @error('age')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                     <div class="form-group">
                         <label for="inputPosition">Position</label>
-                        <input type="text" name="position" class="form-control" id="inputPosition" placeholder="Enter Employee Position"  value="{{ $employee->position }}">
+                        <input type="text" name="position" class="form-control" id="inputPosition" placeholder="Enter Employee Position"  value="{{ old('position', $employee->position) }}">
                     </div>
                     @error('position')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                     <div class="form-group">
                         <label for="inputDetails">Details</label>
-                        <textarea type="email" name="employee_details" class="form-control" id="inputDetails" placeholder="Enter Employee Details">{{ $employee->employee_details }}</textarea>
+                        <textarea type="email" name="employee_details" class="form-control" id="inputDetails" placeholder="Enter Employee Details">{{ old('employee_details', $employee->employee_details) }}</textarea>
                     </div>
                     @error('employee_details')
                         <span class="text-danger">{{ $message }}</span>
@@ -85,9 +85,7 @@
                     <div class="form-group">
                         <label for="inputDepartment">Departments</label>
                         <select class="form-control select2" name="department_id" id="inputDepartment" style="width: 100%;">
-                        @isset($employee->department)
-                        <option value="{{$employee->department->id}}" selected="selected">{{$employee->department->department_name}}</option>
-                        @endisset
+                        <option value="{{old('department_id', $employee->department->id)}}" selected="selected">{{$employee->department->department_name}}</option>
                       </select>
                     </div>
                     @error('department_id')
@@ -97,8 +95,12 @@
                     <div class="form-group">
                         <label for="inputTag">Employee Tags</label>
                         <select class="form-control select2 tags-input" multiple="multiple" name="tags[]" id="inputTag" style="width: 100%;">
-                        @foreach($employee->tags as $tag)
+                        @foreach(old('tags', $employee->tags) as $tag)
+                        @if(!empty(old('tags')))
+                        <option value="{{$tag}}" selected="selected">{{$tag}}</option>
+                        @else
                         <option value="{{$tag->tag_name}}" selected="selected">{{$tag->tag_name}}</option>
+                        @endif
                         @endforeach
                       </select>
                       

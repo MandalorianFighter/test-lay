@@ -39,7 +39,7 @@
                         @csrf
                     <div class="form-group">
                         <label for="inputName">Tag Name</label>
-                        <input type="text" name="tag_name" class="form-control" id="inputName" placeholder="Enter Tag Name">
+                        <input type="text" name="tag_name" class="form-control" id="inputName" placeholder="Enter Tag Name" value="{{ old('tag_name') }}">
                     </div>
                     @error('tag_name')
                         <span class="text-danger">{{ $message }}</span>

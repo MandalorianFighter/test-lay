@@ -49,5 +49,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 <!-- REQUIRED SCRIPTS -->
 
+<script type="module">
+@if(Session::has('message'))
+var type = "{{ Session::get('alert-type') }}"; 
+new Noty({ 
+  type: type, 
+  layout:'topRight', 
+  text: '{{ Session::get('message') }}', 
+  timeout: 3000,
+}).show(); 
+@endif 
+</script>
 </body>
 </html>
