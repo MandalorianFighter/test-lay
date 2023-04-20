@@ -14,10 +14,7 @@ class DepartmentSeeder extends Seeder
      */
     public function run(): void
     {
-        Department::truncate();
-        User::truncate();
-
-        $admin = User::factory()->create();
-        $departments = Department::factory(15)->create();
+        User::factory()->create();
+        Department::factory(15)->create();
     }
 }

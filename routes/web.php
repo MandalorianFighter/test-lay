@@ -23,6 +23,9 @@ Route::group(['middleware' => 'auth'], function () {
     
     Route::group(['prefix' => 'admin', 'middleware' => 'is_admin', 'as' => 'admin.'], function () {
         Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users');
+        Route::get('/activity', [App\Http\Controllers\Admin\ActivityController::class, 'index'])->name('activity');
+        Route::get('/data-source/activity', [App\Http\Controllers\Admin\ActivityController::class, 'dataActivity'])->name('activity.data');
+        Route::get('/users/select', [App\Http\Controllers\Admin\ActivityController::class, 'searchU'])->name('users.select');
     });
     
     Route::group(['prefix' => 'users', 'middleware' => 'is_user', 'as' => 'user.'], function () {
@@ -70,6 +73,11 @@ Route::group(['middleware' => 'auth'], function () {
         // Departments Ajax
 
         Route::get('/data-source/tags', [App\Http\Controllers\User\TagController::class, 'dataTag'])->name('tags.data');
+
+        // User Log Datatable
+
+        Route::get('/user-log', [App\Http\Controllers\User\UserLogController::class, 'index'])->name('user-log');
+        Route::get('/data-source/user-log', [App\Http\Controllers\User\UserLogController::class, 'dataUserLog'])->name('user-log.data');
     });
 });
 

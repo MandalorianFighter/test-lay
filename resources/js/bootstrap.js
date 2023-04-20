@@ -71,11 +71,28 @@ $(function () {
   });
 });
 
+$(function () {
+  var table = $("#activity-table").DataTable({
+    processing: true,
+    serverSide: true,
+    ordering: false,
+  ajax: '/admin/data-source/activity',
+  columns: [
+    {data: 'created_at', type: 'num', name: 'created_at', searchable: false},
+    {data: 'description', name: 'description', width: "40%"},
+    // {data: 'ip', defaultContent:"#", name: 'ip', width: "20%"},
+    {data: 'causer.name', defaultContent: 'Deleted User', name: 'causer.name'},
+  ]
+  });
 
-  $('#inputDepartment').select2({
-    placeholder: 'Select Department',
+  $('#userFind').select2({
+    placeholder: {
+      id: '-1', // the value of the option
+      text: 'Select User'
+    },
+    allowClear: true,
     ajax: {
-      url: '/users/departments/select',
+      url: '/admin/users/select',
       dataType: 'json',
       delay: 250,
       processResults: function (data) {
@@ -83,13 +100,58 @@ $(function () {
             results:  $.map(data, function (item) {
                   return {
                     id: item.id,
-                    text: item.department_name
+                    text: item.name
                   }
               })
           };
         }
     }
 });
+
+$('#userFind').on('select2:select', function (e) {
+  var data = e.params.data;
+  var searchable = $(this).data('column');
+  table.column(searchable).search(data.text)
+  .draw();
+  console.log(data);
+});
+
+});
+
+$(function () {
+  $("#userlog-table").DataTable({
+    processing: true,
+    serverSide: true,
+    ordering: false,
+  ajax: '/users/data-source/user-log',
+  columns: [
+    {data: 'created_at', type: 'num', name: 'created_at', searchable: false},
+    {data: 'description', name: 'description', width: "50%"},
+  ]
+  });
+
+});
+
+
+$('#inputDepartment').select2({
+  placeholder: 'Select Department',
+  ajax: {
+    url: '/users/departments/select',
+    dataType: 'json',
+    delay: 250,
+    processResults: function (data) {
+        return {
+          results:  $.map(data, function (item) {
+                return {
+                  id: item.id,
+                  text: item.department_name
+                }
+            })
+        };
+      }
+  }
+});
+
 
 $('.tags-input').on('select2:select', function (e) {
     var data = e.params.data;

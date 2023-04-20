@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,18 +11,26 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class EmployeeFactory extends Factory
 {
     /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Employee::class;
+    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
+        $faker = \Faker\Factory::create();
         return [
             'employee_name' => fake()->name(),
-            'photo' => fake()->imageUrl(),
+            'photo' => $faker->imageUrl(),
+            'thumbnail' => $faker->imageUrl(),
             'age' => fake()->numberBetween(22, 55),
             'position' => fake()->jobTitle(),
-            'department_id' => fake()->numberBetween(1, 8),
+            'department_id' => fake()->numberBetween(1, 15),
             'employee_details' => fake()->paragraphs(3, true),
         ];
     }

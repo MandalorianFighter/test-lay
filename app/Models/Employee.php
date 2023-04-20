@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Employee extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     const DET_LIMIT = 100;
 
@@ -24,6 +26,14 @@ class Employee extends Model
 
     protected $with = ['tags', 'department'];
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly(['*'])
+        ->useLogName('employee')
+        ->setDescriptionForEvent(fn(string $eventName) => "Employee ({$this->employee_name}) has been {$eventName}.");
+    }
+
     public function department()
     {
         return $this->belongsTo(Department::class);
@@ -31,7 +41,7 @@ class Employee extends Model
 
     public function tags()
     {
-        return $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(Tag::class)->using(EmployeeTag::class);
     }
 
     public function limitDetails()

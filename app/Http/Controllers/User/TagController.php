@@ -87,11 +87,7 @@ class TagController extends Controller
 
     public function delete(Tag $tag)
     {
-        if($tag->employees->count()) {
-            $tag->employees->each(function ($employee) use ($tag) { 
-                $tag->employees()->detach($employee);
-            });
-        }
+        if($tag->employees->count()) $tag->employees()->detach();
         $tag->delete();
 
         $notification = array(

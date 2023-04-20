@@ -1,5 +1,7 @@
 @extends('admin.layouts.app')
 
+@section('title','Admin - All Users')
+
 @section('content')
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->

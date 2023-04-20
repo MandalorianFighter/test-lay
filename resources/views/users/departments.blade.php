@@ -1,5 +1,7 @@
 @extends('users.layouts.app')
 
+@section('title','User - Departments')
+
 @section('content')
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
