@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Session;
 
 class ApprovalMiddleware
 {
@@ -15,13 +16,14 @@ class ApprovalMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(auth()->check()) {
-            if(!auth()->user()->approved && !auth()->user()->is_admin) {
-                auth()->logout();
-                
-                return redirect()->route('login')->with(['message' => 'Your Account Needs Admin Approval!']);
-            }
+        if (auth()->user() && !(auth()->user()->approved || auth()->user()->is_admin)) {
+            Session::flush();
+            return redirect()->route('login')->with(['message' => 'Your Account Needs Admin Approval!']);
         }
         return $next($request);
     }
 }
+
+
+
+

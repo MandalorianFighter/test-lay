@@ -21,10 +21,6 @@ class EventServiceProvider extends ServiceProvider
         \Illuminate\Auth\Events\Logout::class => [
             \App\Listeners\AuthLogActivity::class.'@logout',
         ],
-        Registered::class => [
-            SendEmailVerificationNotification::class,
-            \App\Listeners\AuthLogActivity::class.'@registered',
-        ],
         \Illuminate\Auth\Events\Failed::class => [
             \App\Listeners\AuthLogActivity::class.'@failed',
         ],

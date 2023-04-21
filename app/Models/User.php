@@ -61,6 +61,16 @@ class User extends Authenticatable
 
     public function tapActivity(Activity $activity)
     {
-        $activity->ip = request()->getClientIp();
+        if($activity->event == 'created') {
+            $activity->description = "User ({$this->email}) has been registered.";
+            $activity->causer_type = 'App\Models\User';
+            $activity->causer_id = $this->id;
+        }
+        
+    }
+
+    public function routeTelegramNotify()
+    {
+        return $this->telegram_id;
     }
 }

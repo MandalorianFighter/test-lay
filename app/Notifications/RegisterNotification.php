@@ -43,6 +43,7 @@ class RegisterNotification extends Notification
         $url = route('login');
 
         return TelegramMessage::create()
+                    ->to($notifiable->routeTelegramNotify())
                     ->content('New user has registered. -> ' . $this->user->name)
                     ->button('Approve New User', $url);
     }
@@ -59,3 +60,5 @@ class RegisterNotification extends Notification
         ];
     }
 }
+
+

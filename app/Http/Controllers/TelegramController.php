@@ -11,8 +11,7 @@ use Illuminate\Support\Facades\Notification;
 
 class TelegramController extends Controller
 {
-
-    protected $telegramId = '-852083579';
+    // protected $telegramId = '-852083579';
 
     public function auth(Request $request)
     {
@@ -28,13 +27,17 @@ class TelegramController extends Controller
             $user = User::create([
                 'name' => $request->input('last_name') ? $request->input('first_name') . ' ' . $request->input('last_name') : $request->input('first_name'),
                 'email' =>  $user_id.'@example.com', // You can set any email here
-                'password' => bcrypt($request->input('username') . $user_id), // Generate a password from telegram_username and telegram_id
+                'password' => bcrypt($request->input('first_name').'123'), // Generate a password
                 'telegram_id' => $user_id, // Save the Telegram user ID
                 'telegram_username' => $request->input('username'),
                 'photo_url' => $request->input('photo_url'),
             ]);
-            Notification::route('telegram', $this->telegramId) // send notification to the admin group in Telegram
-            ->notify(new RegisterNotification($user));
+            
+            // Notification::route('telegram', $this->telegramId) // send notification to the admin group in Telegram
+            // ->notify(new RegisterNotification($user));
+
+            $admins = User::where('is_admin', 1)->get();
+            Notification::send($admins, new RegisterNotification($user)); // send notification to admin individually
         }
 
         // Log the user in

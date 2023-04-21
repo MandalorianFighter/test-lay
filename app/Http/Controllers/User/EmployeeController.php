@@ -179,11 +179,7 @@ class EmployeeController extends Controller
     }
 
     private function storePhoto(Request $request)
-    {
-        // $path = $request->file('photo')->store('images', 's3');
-        // Storage::disk('s3')->setVisibility($path, 'public');
-        // $url = Storage::disk('s3')->url($path);
-            
+    {            
         if(!$request->hasFile('photo')) {
             return;
         }
