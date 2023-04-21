@@ -76,8 +76,8 @@ class EmployeeController extends Controller
     );
 
         $employee = Employee::create($request->except(['photo']));
-        $employee->photo = $this->storePhoto($request);
-        $employee->thumbnail = $this->generateThumbnail($request);
+        $employee->photo = $this->normalPhoto($request);
+        $employee->thumbnail = $this->smallPhoto($request);
         $employee->save();
 
         $this->syncTag($employee, $request->tags);
@@ -119,15 +119,12 @@ class EmployeeController extends Controller
 
         $employee->update($request->all());
 
-        if($request->hasFile('photo')) {
-            $employee->photo = $this->storePhoto($request);
-            $employee->thumbnail = $this->generateThumbnail($request);
-            $employee->save();
-        
-            // if(file_exists($old_image)) unlink($old_image);
-            if(Storage::disk('s3')->exists('images/'.$old_image)) Storage::disk('s3')->delete('images/'.$old_image);
-            if(Storage::disk('s3')->exists('images/thumbnails/small_'.$old_image)) Storage::disk('s3')->delete('images/thumbnails/small_'.$old_image);
-        }
+        $employee->photo = $this->normalPhoto($request);
+        $employee->thumbnail = $this->smallPhoto($request);
+        $employee->save();
+    
+        if(Storage::disk('s3')->exists('images/'.$old_image)) Storage::disk('s3')->delete('images/'.$old_image);
+        if(Storage::disk('s3')->exists('images/thumbnails/small_'.$old_image)) Storage::disk('s3')->delete('images/thumbnails/small_'.$old_image);
 
         $this->syncTag($employee, $request->tags);
         
@@ -178,38 +175,46 @@ class EmployeeController extends Controller
         return response()->json($data);
     }
 
-    private function storePhoto(Request $request)
+    private function normalPhoto(Request $request)
     {            
         if(!$request->hasFile('photo')) {
-            return;
+            $photo = public_path('images/default/image-coming-soon.jpg');
+            $name = basename($photo);
+        } else {
+            $photo = $request->file('photo');
+            $name = $request->file('photo')->hashname();
         }
-    
-        $name = $request->file('photo')->hashname();
-        $image = Image::make($request->file('photo'))->resize(400, 400, function ($constraint) {
-            $constraint->aspectRatio();
-            $constraint->upsize();
-        })->stream('jpg', 90);
-        $imgPath = 'images/'.$name;
-        Storage::disk('s3')->put($imgPath, $image,'public');
-        $url = Storage::disk('s3')->url($imgPath);
-
+        $path = 'images/'.$name;
+        
+        $url = $this->generateThumbnail($photo, $path, 400, 400);
         return $url;
     }
 
-    private function generateThumbnail(Request $request)
+    private function smallPhoto(Request $request)
     {
         if(!$request->hasFile('photo')) {
-            return;
+            $photo = public_path('images/default/image-coming-soon.jpg');
+            $smallthumb = 'small_'.basename($photo);
+        } else {
+            $photo = $request->file('photo');
+            $smallthumb = 'small_'.$request->file('photo')->hashname();
         }
+        $smallpath = 'images/thumbnails/'.$smallthumb;
 
-        $name = 'small_'.$request->file('photo')->hashname();
-        $thumbImage = Image::make($request->file('photo'))->resize(200, 200, function ($constraint) {
+        $smallurl = $this->generateThumbnail($photo, $smallpath, 200, 200);
+
+        return $smallurl;
+    }
+
+    private function generateThumbnail($photo, $path, $width, $height)
+    {
+        $image = Image::make($photo)->resize($width, $height, function ($constraint) {
             $constraint->aspectRatio();
+            $constraint->upsize();
         })->stream('jpg', 90);
-        $thumbPath = 'images/thumbnails/'.$name;
-        Storage::disk('s3')->put($thumbPath, $thumbImage,'public');
-        $thumbUrl = Storage::disk('s3')->url($thumbPath);
-        return $thumbUrl;
+        Storage::disk('s3')->put($path, $image,'public');
+        $url = Storage::disk('s3')->url($path);
+        return $url;
     }
 
     private function syncTag(Employee $employee, array $tags)
