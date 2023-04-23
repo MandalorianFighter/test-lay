@@ -29,7 +29,6 @@ class Employee extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly(['*'])
         ->useLogName('employee')
         ->setDescriptionForEvent(fn(string $eventName) => "Employee ({$this->employee_name}) has been {$eventName}.");
     }
@@ -41,7 +40,7 @@ class Employee extends Model
 
     public function tags()
     {
-        return $this->belongsToMany(Tag::class)->using(EmployeeTag::class);
+        return $this->belongsToMany(Tag::class);
     }
 
     public function limitDetails()

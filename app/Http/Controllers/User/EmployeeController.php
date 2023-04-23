@@ -102,31 +102,40 @@ class EmployeeController extends Controller
     public function update(Request $request, Employee $employee)
     {
         $request->validate([
-            'employee_name' => 'required|min:2|max:256',
-            'age' => 'required',
-            'department_id' => 'required',
-            'position' => 'required',
-            'employee_details' => 'required|max:700',
-            'photo' => 'image|max:2048|mimes:jpg,png|dimensions:min_width=300,min_height=300',
-            'tags.*' => 'nullable',
-        ],
-        [
-            'photo.dimensions' => 'An image should be at least :min_width x :min_height pixels!',
-        ]
-    );
+                'employee_name' => 'required|min:2|max:256',
+                'age' => 'required',
+                'department_id' => 'required',
+                'position' => 'required',
+                'employee_details' => 'required|max:700',
+                'photo' => 'image|max:2048|mimes:jpg,png|dimensions:min_width=300,min_height=300',
+                'tags.*' => 'nullable',
+            ],
+            [
+                'photo.dimensions' => 'An image should be at least :min_width x :min_height pixels!',
+            ]
+        );
+
+        Employee::withoutEvents(function () use ($employee, $request) {   // making one event on update
 
         $old_image = basename($request->old_image);
-
         $employee->update($request->all());
 
-        $employee->photo = $this->normalPhoto($request);
-        $employee->thumbnail = $this->thumbPhoto($request);
-        $employee->save();
-    
-        if(Storage::disk('s3')->exists('images/'.$old_image)) Storage::disk('s3')->delete('images/'.$old_image);
-        (Storage::disk('s3')->exists('images/thumbnails/small_'.$old_image)) ? Storage::disk('s3')->delete('images/thumbnails/small_'.$old_image) : Storage::disk('s3')->delete('images/thumbnails/medium_'.$old_image);
+        if($request->file('photo')) {
+            $employee->photo = $this->normalPhoto($request);
+            $employee->thumbnail = $this->thumbPhoto($request);
+            $employee->save();
+        
+            if(Storage::disk('s3')->exists('images/'.$old_image)) Storage::disk('s3')->delete('images/'.$old_image);
+            (Storage::disk('s3')->exists('images/thumbnails/small_'.$old_image)) ? Storage::disk('s3')->delete('images/thumbnails/small_'.$old_image) : Storage::disk('s3')->delete('images/thumbnails/medium_'.$old_image);
+        }
 
         $this->syncTag($employee, $request->tags);
+
+        activity()
+            ->useLog('employee')
+            ->performedOn($employee)
+            ->log("Employee ({$employee->employee_name}) has been updated.");
+        });
         
         $notification = array(
             'message' => 'Employee Is Updated Successfully!',
