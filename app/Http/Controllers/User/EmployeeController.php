@@ -77,7 +77,7 @@ class EmployeeController extends Controller
 
         $employee = Employee::create($request->except(['photo']));
         $employee->photo = $this->normalPhoto($request);
-        $employee->thumbnail = $this->smallPhoto($request);
+        $employee->thumbnail = $this->thumbPhoto($request);
         $employee->save();
 
         $this->syncTag($employee, $request->tags);
@@ -120,11 +120,11 @@ class EmployeeController extends Controller
         $employee->update($request->all());
 
         $employee->photo = $this->normalPhoto($request);
-        $employee->thumbnail = $this->smallPhoto($request);
+        $employee->thumbnail = $this->thumbPhoto($request);
         $employee->save();
     
         if(Storage::disk('s3')->exists('images/'.$old_image)) Storage::disk('s3')->delete('images/'.$old_image);
-        if(Storage::disk('s3')->exists('images/thumbnails/small_'.$old_image)) Storage::disk('s3')->delete('images/thumbnails/small_'.$old_image);
+        (Storage::disk('s3')->exists('images/thumbnails/small_'.$old_image)) ? Storage::disk('s3')->delete('images/thumbnails/small_'.$old_image) : Storage::disk('s3')->delete('images/thumbnails/medium_'.$old_image);
 
         $this->syncTag($employee, $request->tags);
         
@@ -142,7 +142,7 @@ class EmployeeController extends Controller
 
         $old_image = basename($employee->photo);
         if(Storage::disk('s3')->exists('images/'.$old_image)) Storage::disk('s3')->delete('images/'.$old_image);
-        if(Storage::disk('s3')->exists('images/thumbnails/small_'.$old_image)) Storage::disk('s3')->delete('images/thumbnails/small_'.$old_image);
+        (Storage::disk('s3')->exists('images/thumbnails/small_'.$old_image)) ? Storage::disk('s3')->delete('images/thumbnails/small_'.$old_image) : Storage::disk('s3')->delete('images/thumbnails/medium_'.$old_image);
         $employee->delete();
 
         $notification = array(
@@ -177,38 +177,35 @@ class EmployeeController extends Controller
 
     private function normalPhoto(Request $request)
     {            
-        if(!$request->hasFile('photo')) {
-            $photo = public_path('images/default/image-coming-soon.jpg');
-            $name = basename($photo);
-        } else {
-            $photo = $request->file('photo');
-            $name = $request->file('photo')->hashname();
-        }
+        $defaultPhoto = public_path('images/default/image-coming-soon.jpg');
+        $photo = $request->file('photo') ?? $defaultPhoto;
+        $name = ($request->file('photo')) ? $request->file('photo')->hashname() : basename($defaultPhoto);  
+
         $path = 'images/'.$name;
         
-        $url = $this->generateThumbnail($photo, $path, 400, 400);
+        $url = $this->generateThumbnail($photo, $path, 400);
         return $url;
     }
 
-    private function smallPhoto(Request $request)
+    private function thumbPhoto(Request $request, $size = 'small')  // $size -> 'small'/'medium'
     {
-        if(!$request->hasFile('photo')) {
-            $photo = public_path('images/default/image-coming-soon.jpg');
-            $smallthumb = 'small_'.basename($photo);
-        } else {
-            $photo = $request->file('photo');
-            $smallthumb = 'small_'.$request->file('photo')->hashname();
-        }
-        $smallpath = 'images/thumbnails/'.$smallthumb;
+        $thumbPrefix = ($size === 'small') ? 'small_' : 'medium_';
 
-        $smallurl = $this->generateThumbnail($photo, $smallpath, 200, 200);
+        $defaultPhoto = public_path('images/default/image-coming-soon.jpg');
+        $photo = $request->file('photo') ?? $defaultPhoto;
+        $thumb = ($request->file('photo')) ? $thumbPrefix.$request->file('photo')->hashname() : $thumbPrefix.basename($defaultPhoto);
 
-        return $smallurl;
+        $thumbpath = 'images/thumbnails/'.$thumb;
+        $thumbSize = ($size === 'small') ? 200 : 300;
+
+        $thumburl = $this->generateThumbnail($photo, $thumbpath, $thumbSize);
+
+        return $thumburl;
     }
 
-    private function generateThumbnail($photo, $path, $width, $height)
+    private function generateThumbnail($photo, $path, $sideSize)
     {
-        $image = Image::make($photo)->resize($width, $height, function ($constraint) {
+        $image = Image::make($photo)->resize($sideSize, $sideSize, function ($constraint) {
             $constraint->aspectRatio();
             $constraint->upsize();
         })->stream('jpg', 90);
