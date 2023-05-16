@@ -39,7 +39,7 @@ class ActivityDataTable extends DataTable
                     ->setTableId('activity-table')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
-                    //->dom('Bfrtip')
+                    // ->dom('frtip')
                     ->orderBy(1)
                     ->selectStyleSingle();
     }

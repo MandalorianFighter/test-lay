@@ -86,7 +86,7 @@
             <td>{{ $user->id }}</td>
             <td>{{ $user->name }}</td>
             <td>{{ $user->email }}</td>
-            <td>{{ $user->created_at->diffForHumans() }}</td>
+            <td>{{ $user->created_at ? $user->created_at->diffForHumans() : 'Not Defined' }}</td>
             <td>
             </div>
             @if($user->id != 1)

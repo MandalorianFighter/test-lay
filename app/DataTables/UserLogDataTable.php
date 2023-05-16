@@ -39,7 +39,7 @@ class UserLogDataTable extends DataTable
                     ->setTableId('userlog-table')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
-                    //->dom('Bfrtip')
+                    // ->dom('frtip')
                     ->orderBy(1)
                     ->selectStyleSingle();
     }

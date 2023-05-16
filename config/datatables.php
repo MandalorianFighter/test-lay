@@ -124,4 +124,5 @@ return [
      * Callbacks needs to start by those terms, or they will be cast to string.
      */
     'callback' => ['$', '$.', 'function'],
+
 ];

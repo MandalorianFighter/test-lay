@@ -1,13 +1,13 @@
 import 'bootstrap';
 
+import $ from "jquery";
+window.$ = $;
+
 import Noty from 'noty';
 window.Noty = Noty;
 
 import toastr from 'toastr';
 window.toastr = toastr;
-
-import $ from "jquery";
-window.$ = $;
 
 import select2 from 'select2';
 select2();
